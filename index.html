@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="AI基礎講座の内容を章ごとに学べる、オフライン対応のクイズサイトです。"
+    />
+    <meta name="theme-color" content="#183153" />
+    <title>AI Study Studio | AI基礎講座クイズ</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="data/chapter-1.js" defer></script>
+    <script src="data/chapter-2.js" defer></script>
+    <script src="data/chapter-3.js" defer></script>
+    <script src="data/chapter-4.js" defer></script>
+    <script src="data/chapter-5.js" defer></script>
+    <script src="data/chapter-6.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer crossorigin="anonymous"></script>
+    <script src="supabase-config.js" defer></script>
+    <script src="cloud-sync.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">本文へ移動</a>
+
+    <div class="page-texture" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand" href="#" id="brand-home" aria-label="章一覧に戻る">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 40 40" role="img">
+            <path d="M12 8.5h13.5A4.5 4.5 0 0 1 30 13v18.5H16.5A4.5 4.5 0 0 1 12 27V8.5Z" />
+            <path d="M17 14h7M17 19h8M17 24h5" />
+            <circle cx="29.5" cy="10.5" r="5" />
+          </svg>
+        </span>
+        <span>
+          <span class="brand-name">AI Study Studio</span>
+          <span class="brand-subtitle">AI基礎講座</span>
+        </span>
+      </a>
+
+      <div class="header-actions">
+        <div class="storage-indicator" id="storage-indicator" title="学習履歴はこのブラウザ内に保存されます">
+          <span class="storage-dot" aria-hidden="true"></span>
+          <span>この端末に自動保存</span>
+        </div>
+
+        <div class="auth-area" aria-live="polite">
+          <div class="auth-loading" id="auth-loading" role="status">
+            <span class="auth-spinner" aria-hidden="true"></span>
+            <span>認証を確認中</span>
+          </div>
+
+          <button class="auth-login-button" id="auth-login-button" type="button" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#f25022" d="M1 1h10v10H1z" />
+              <path fill="#7fba00" d="M13 1h10v10H13z" />
+              <path fill="#00a4ef" d="M1 13h10v10H1z" />
+              <path fill="#ffb900" d="M13 13h10v10H13z" />
+            </svg>
+            <span>Microsoft 365でログイン</span>
+          </button>
+
+          <div class="auth-user" id="auth-user" hidden>
+            <span class="auth-avatar" id="auth-avatar" aria-hidden="true"></span>
+            <span class="auth-user-details">
+              <strong id="auth-user-name"></strong>
+              <span id="auth-user-email"></span>
+            </span>
+            <button class="auth-logout-button" id="auth-logout-button" type="button" aria-label="ログアウト">
+              ログアウト
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="auth-gate" id="auth-gate" aria-labelledby="auth-gate-title" hidden>
+      <div class="auth-gate-card">
+        <span class="auth-gate-icon" aria-hidden="true">
+          <svg viewBox="0 0 32 32">
+            <path d="M9 14v-3a7 7 0 0 1 14 0v3" />
+            <rect x="6" y="14" width="20" height="14" rx="4" />
+            <path d="M16 20v3" />
+          </svg>
+        </span>
+        <p class="section-kicker">MEMBERS ONLY</p>
+        <h1 id="auth-gate-title">社内アカウントでログイン</h1>
+        <p id="auth-gate-description">
+          この学習ツールは社内向けです。Microsoft 365の社内アカウントでログインしてください。学習履歴はアカウントごとに安全に同期されます。
+        </p>
+        <button
+          class="auth-login-button auth-gate-login-button"
+          id="auth-gate-login-button"
+          type="button"
+          aria-describedby="auth-gate-description"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#f25022" d="M1 1h10v10H1z" />
+            <path fill="#7fba00" d="M13 1h10v10H13z" />
+            <path fill="#00a4ef" d="M1 13h10v10H1z" />
+            <path fill="#ffb900" d="M13 13h10v10H13z" />
+          </svg>
+          <span>Microsoft 365でログイン</span>
+        </button>
+        <p class="auth-gate-note">Microsoft 365の認証画面へ移動します</p>
+      </div>
+    </section>
+
+    <main id="main-content">
+      <section class="view home-view" id="home-view" aria-labelledby="home-title">
+        <div class="hero-shell">
+          <div class="hero-copy">
+            <p class="eyebrow"><span>LEARN</span><span>PRACTICE</span><span>MASTER</span></p>
+            <h1 id="home-title">学んだことを、<br /><em>使える知識</em>に。</h1>
+            <p class="hero-lead">
+              AI基礎講座を章ごとにクイズで定着。間違えた問題は自動で記録され、あとから何度でも復習できます。
+            </p>
+            <button class="primary-button hero-action" id="continue-button" type="button" hidden>
+              <span id="continue-label">学習を続ける</span>
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 6 6-6 6" /></svg>
+            </button>
+          </div>
+
+          <div class="hero-dashboard" aria-label="学習サマリー">
+            <div class="dashboard-topline">
+              <span>YOUR PROGRESS</span>
+              <span id="progress-date">TODAY</span>
+            </div>
+            <div class="dashboard-score">
+              <span class="score-number" id="answered-total">0</span>
+              <span class="score-unit">問に回答</span>
+            </div>
+            <div class="sparkline" aria-hidden="true">
+              <svg viewBox="0 0 320 80" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="spark-fill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#b8d84a" stop-opacity=".42" />
+                    <stop offset="1" stop-color="#b8d84a" stop-opacity="0" />
+                  </linearGradient>
+                </defs>
+                <path class="spark-area" d="M0 68 C34 65 36 47 70 51 S110 65 139 42 S180 34 208 38 S251 19 282 25 S305 15 320 9 L320 80 L0 80 Z" />
+                <path class="spark-line" d="M0 68 C34 65 36 47 70 51 S110 65 139 42 S180 34 208 38 S251 19 282 25 S305 15 320 9" />
+              </svg>
+            </div>
+            <div class="dashboard-stats">
+              <div>
+                <span class="stat-label">ベスト正答率</span>
+                <strong id="best-rate">—</strong>
+              </div>
+              <div>
+                <span class="stat-label">復習待ち</span>
+                <strong><span id="review-total">0</span><small> 問</small></strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <section class="course-section" aria-labelledby="course-heading">
+          <div class="section-heading-row">
+            <div>
+              <p class="section-kicker">COURSE MAP</p>
+              <h2 id="course-heading">章を選んでスタート</h2>
+            </div>
+
+            <label class="shuffle-control">
+              <input type="checkbox" id="shuffle-questions" checked />
+              <span class="shuffle-switch" aria-hidden="true"><span></span></span>
+              <span class="shuffle-label">問題をシャッフル</span>
+            </label>
+
+            <fieldset class="count-selector" id="count-selector">
+              <legend>出題数</legend>
+              <label>
+                <input type="radio" name="question-count" value="5" />
+                <span>5問</span>
+              </label>
+              <label>
+                <input type="radio" name="question-count" value="10" checked />
+                <span>10問</span>
+              </label>
+              <label>
+                <input type="radio" name="question-count" value="20" />
+                <span>20問</span>
+              </label>
+              <label>
+                <input type="radio" name="question-count" value="all" />
+                <span>全問</span>
+              </label>
+            </fieldset>
+          </div>
+
+          <div class="chapter-grid" id="chapter-grid" aria-live="polite"></div>
+        </section>
+
+        <section class="review-strip" id="review-strip" aria-labelledby="review-heading" hidden>
+          <div class="review-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 1-8.2 5.3" /><path d="M3 3v5.5h5.5" /><path d="M12 7v5l3.2 2" /></svg>
+          </div>
+          <div class="review-copy">
+            <p class="section-kicker">REVIEW QUEUE</p>
+            <h2 id="review-heading">間違いを、次の得意に変えよう</h2>
+            <p><span id="review-strip-count">0</span>問が復習を待っています。正解すると復習リストから外れます。</p>
+          </div>
+          <button class="secondary-button" type="button" id="review-all-button">まとめて復習</button>
+        </section>
+
+        <div class="home-footer-actions">
+          <button class="text-button danger-text" id="reset-progress-button" type="button">学習履歴をリセット</button>
+        </div>
+      </section>
+
+      <section class="view quiz-view" id="quiz-view" aria-labelledby="quiz-question" hidden>
+        <div class="quiz-topbar">
+          <button class="icon-text-button" id="quit-quiz-button" type="button">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12.5 4-6 6 6 6" /></svg>
+            章一覧
+          </button>
+          <div class="quiz-identity">
+            <span class="chapter-pill" id="quiz-chapter-pill">第1章</span>
+            <span id="quiz-chapter-title">章タイトル</span>
+          </div>
+          <span class="mode-pill" id="quiz-mode-pill">通常モード</span>
+        </div>
+
+        <div class="quiz-progress-row">
+          <div class="quiz-progress-copy">
+            <span id="quiz-progress-label">QUESTION 01 / 10</span>
+            <span id="quiz-score-live">正解 0</span>
+          </div>
+          <div
+            class="progress-track"
+            id="quiz-progress-track"
+            role="progressbar"
+            aria-label="クイズの進捗"
+            aria-valuemin="0"
+            aria-valuemax="10"
+            aria-valuenow="1"
+          >
+            <span id="quiz-progress-bar"></span>
+          </div>
+        </div>
+
+        <article class="question-card">
+          <div class="question-meta">
+            <span class="question-type">SELECT ONE</span>
+          </div>
+          <h2 id="quiz-question">問題文</h2>
+          <div class="option-list" id="option-list" role="group" aria-label="選択肢"></div>
+
+          <div class="feedback-panel" id="feedback-panel" aria-live="polite" hidden>
+            <div class="feedback-mark" id="feedback-mark" aria-hidden="true"></div>
+            <div>
+              <strong id="feedback-title">正解です</strong>
+              <p id="feedback-text">解説</p>
+            </div>
+          </div>
+
+          <div class="question-footer">
+            <span class="keyboard-hint">数字キー <kbd>1</kbd>〜<kbd>4</kbd> でも回答できます</span>
+            <button class="primary-button" id="next-question-button" type="button" hidden>
+              <span>次の問題</span>
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 6 6-6 6" /></svg>
+            </button>
+          </div>
+        </article>
+      </section>
+
+      <section class="view result-view" id="result-view" aria-labelledby="result-title" hidden>
+        <div class="result-card">
+          <div class="result-celebration" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+
+          <p class="section-kicker" id="result-kicker">CHAPTER COMPLETE</p>
+          <h1 id="result-title">おつかれさまでした！</h1>
+          <p class="result-subtitle" id="result-subtitle">学習結果を確認しましょう。</p>
+
+          <div class="result-summary">
+            <div class="score-ring" id="score-ring">
+              <div class="score-ring-inner">
+                <strong id="result-percent">80%</strong>
+                <span>正答率</span>
+              </div>
+            </div>
+            <div class="result-numbers">
+              <div>
+                <span>正解</span>
+                <strong><span id="result-correct">8</span><small> / <span id="result-total">10</span></small></strong>
+              </div>
+              <div>
+                <span>復習リストに追加</span>
+                <strong><span id="result-wrong">2</span><small> 問</small></strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="result-actions">
+            <button class="secondary-button" id="retry-button" type="button">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M16 8a6.5 6.5 0 1 0 .1 3.7" /><path d="M16 3v5h-5" /></svg>
+              もう一度挑戦
+            </button>
+            <button class="primary-button" id="next-chapter-button" type="button">
+              <span>次の章に進む</span>
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 6 6-6 6" /></svg>
+            </button>
+          </div>
+
+          <button class="text-button result-home-button" id="result-home-button" type="button">章一覧へ戻る</button>
+
+          <div class="answer-review" id="answer-review" hidden>
+            <button class="answer-review-toggle" id="answer-review-toggle" type="button" aria-expanded="false">
+              <span>間違えた問題を確認</span>
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 7 6 6 6-6" /></svg>
+            </button>
+            <div class="answer-review-list" id="answer-review-list" hidden></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>AI STUDY STUDIO</span>
+      <span>学習履歴はこの端末に保存し、ログイン中はクラウドと同期します。</span>
+    </footer>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+    <noscript>
+      <div class="noscript-message">このクイズを利用するにはJavaScriptを有効にしてください。</div>
+    </noscript>
+  </body>
+</html>

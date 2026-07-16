@@ -1,0 +1,14 @@
+{
+  "name": "ai-study-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI基礎講座PDFをもとにしたMicrosoft 365認証・Supabase同期対応クイズサイト",
+  "scripts": {
+    "validate": "node tests/validate-data.cjs",
+    "test:e2e": "node tests/smoke.cjs",
+    "test:cloud": "node tests/cloud-sync.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.61.1"
+  }
+}
